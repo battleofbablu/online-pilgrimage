@@ -3,27 +3,19 @@ package com.example.auth.service;
 import com.example.auth.dto.LoginRequest;
 import com.example.auth.dto.LoginResponse;
 import com.example.auth.dto.RegisterRequest;
-import com.example.auth.entity.Admin;
-import com.example.auth.entity.Administrator;
-import com.example.auth.entity.Role;
-import com.example.auth.entity.User;
+import com.example.auth.entity.*;
 import com.example.auth.feign.AdminClient;
 import com.example.auth.feign.AdministratorClient;
 import com.example.auth.feign.UserClient;
 import com.example.auth.security.CustomUserDetails;
 import com.example.auth.security.JwtUtil;
-import com.example.auth.security.SecurityConfig;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
-@Data
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
@@ -33,6 +25,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TokenService tokenService;
+    private final TokenCleanupService tokenCleanupService;
 
     @Override
     public void register(RegisterRequest request) {
@@ -40,34 +33,37 @@ public class AuthServiceImpl implements AuthService {
         String email = request.getEmail().toLowerCase();
         Role assignedRole = request.getRole() != null ? request.getRole() : Role.USER;
 
-        // Save based on role
-        if (assignedRole == Role.USER) {
-            User user = User.builder()
-                    .name(request.getName())
-                    .email(email)
-                    .password(encodedPassword)
-                    .role(assignedRole)
-                    .build();
-            userClient.saveUser(user);
-            System.out.println("User registered: " + user.getEmail());
-        } else if (assignedRole == Role.ADMIN) {
-            Admin admin = Admin.builder()
-                    .name(request.getName())
-                    .email(email)
-                    .password(encodedPassword)
-                    .role(assignedRole)
-                    .build();
-            adminClient.saveadmin(admin);
-            System.out.println("Admin registered: " + admin.getEmail());
-        } else if (assignedRole == Role.ADMINISTRATOR) {
-            Administrator administrator = Administrator.builder()
-                    .name(request.getName())
-                    .email(email)
-                    .password(encodedPassword)
-                    .role(assignedRole)
-                    .build();
-            administratorClient.saveAdministrator(administrator);
-            System.out.println("Administrator registered: " + administrator.getEmail());
+        switch (assignedRole) {
+            case USER -> {
+                User user = User.builder()
+                        .name(request.getName())
+                        .email(email)
+                        .password(encodedPassword)
+                        .role(assignedRole)
+                        .build();
+                userClient.saveUser(user);
+                System.out.println("User registered: " + email);
+            }
+            case ADMIN -> {
+                Admin admin = Admin.builder()
+                        .name(request.getName())
+                        .email(email)
+                        .password(encodedPassword)
+                        .role(assignedRole)
+                        .build();
+                adminClient.saveadmin(admin);
+                System.out.println("Admin registered: " + email);
+            }
+            case ADMINISTRATOR -> {
+                Administrator administrator = Administrator.builder()
+                        .name(request.getName())
+                        .email(email)
+                        .password(encodedPassword)
+                        .role(assignedRole)
+                        .build();
+                administratorClient.saveAdministrator(administrator);
+                System.out.println("Administrator registered: " + email);
+            }
         }
     }
 
@@ -108,8 +104,16 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String token = jwtUtil.generateToken(userDetails);
-        String refreshToken = tokenService.createRefreshToken(request.getEmail());
+
+        // 🧹 Cleanup old tokens before saving a new one
+        tokenCleanupService.deleteOldTokens(request.getEmail(), userDetails.getRole());
+
+        String refreshToken = tokenService.createRefreshToken(
+                request.getEmail(),
+                userDetails.getRole()
+        );
 
         return new LoginResponse(token, refreshToken);
     }
+
 }

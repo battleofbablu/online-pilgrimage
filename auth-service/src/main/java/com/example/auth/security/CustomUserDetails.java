@@ -21,33 +21,34 @@ public class CustomUserDetails implements UserDetails {
 
     private String email;
     private String password;
-    private String role;
+    private Role role;
 
     // Constructor for User
     public CustomUserDetails(User user) {
         this.email = user.getEmail();
         this.password = user.getPassword();
-        this.role = user.getRole().name(); // Assuming role is enum
+        this.role = user.getRole(); // Assuming role is enum
     }
 
     // Constructor for Admin
     public CustomUserDetails(Admin admin) {
         this.email = admin.getEmail();
         this.password = admin.getPassword();
-        this.role = admin.getRole().name();
+        this.role = admin.getRole();
     }
     public CustomUserDetails(Administrator administrator) {
         this.email = administrator.getEmail();
         this.password = administrator.getPassword();
-        this.role = administrator.getRole().name();
+        this.role = administrator.getRole();
     }
 
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
+
 
     @Override public String getUsername() { return email; }
     @Override public boolean isAccountNonExpired() { return true; }

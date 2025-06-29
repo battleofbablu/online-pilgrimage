@@ -1,6 +1,7 @@
 package com.example.auth.security;
 
 
+import com.example.auth.entity.Token;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String token = authHeader.substring(7);
         final String email;
 
+
         try {
             email = jwtUtil.extractEmail(token);
         } catch (Exception e) {
@@ -63,13 +65,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
 
-            if (jwtUtil.validateToken(token)) {
+            if (jwtUtil.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+
         }
 
         filterChain.doFilter(request, response);
