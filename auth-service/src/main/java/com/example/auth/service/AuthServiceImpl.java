@@ -80,6 +80,7 @@ public class AuthServiceImpl implements AuthService {
         switch (loginType) {
             case "ADMIN":
                 Admin admin = adminClient.getAdminByEmail(payload);
+                System.out.println("Fetched Admin: " + admin);
                 if (admin == null || !passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
                     throw new RuntimeException("Invalid admin credentials");
                 }
