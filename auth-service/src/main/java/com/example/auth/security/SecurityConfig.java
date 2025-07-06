@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").hasRole("USER")
                         .requestMatchers("/api/admins/**").hasRole("ADMIN")
                         .requestMatchers("/api/administrators/**").hasRole("ADMINISTRATOR")
+                        .requestMatchers("/api/geoapify/hotels/**").hasAnyRole("USER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
