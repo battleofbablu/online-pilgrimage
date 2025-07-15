@@ -1,0 +1,113 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: battleofbablu  # ← choose strong root password
+      MYSQL_DATABASE: pilgrimage
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - backend
+    restart: always
+
+
+  discovery-server:
+    image: vjijayjadhav9307/discovery-server:latest
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    restart: always
+
+  spring-boot-admin:
+    image: vjijayjadhav9307/spring-boot-admin:latest
+    container_name: spring-boot-admin
+    ports:
+      - "9090:9090"
+    networks:
+      - backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    restart: always
+
+  auth-service:
+    image: vjijayjadhav9307/auth-service:latest
+    container_name: auth-service
+    ports:
+      - "8090:8090"
+    depends_on:
+      - mysql
+      - discovery-server
+    networks:
+      - backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/auth_database
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=battleofbablu
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://localhost:8761/eureka/
+    restart: always
+
+  user-service:
+    image: vjijayjadhav9307/user-service:latest
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+      - discovery-server
+    networks:
+      - backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/user_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=battleofbablu
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://localhost:8761/eureka/
+    restart: always
+
+  admin-service:
+    image: vjijayjadhav9307/admin-service:latest
+    container_name: admin-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql
+      - discovery-server
+    networks:
+      - backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/admin_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=battleofbablu
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://localhost:8761/eureka/
+    restart: always
+
+  hotel-service:
+    image: vjijayjadhav9307/hotel-booking-service:latest
+    container_name: hotel-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - mysql
+      - discovery-server
+    networks:
+      - backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/hotel_booking
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=battleofbablu
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://localhost:8761/eureka/
+    restart: always
+
+networks:
+  backend:
+    driver: bridge
