@@ -1,5 +1,6 @@
 package com.example.demo.Model;
 
+import jakarta.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import jakarta.persistence.Entity;

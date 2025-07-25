@@ -5,7 +5,6 @@ import com.example.hotel.dto.BookingResponse;
 import com.example.hotel.entity.Booking;
 import com.example.hotel.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,10 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
 
-    // Save a booking
+    /**
+     * Create and save a new booking
+     * Automatically sets bookedAt timestamp.
+     */
     public Booking createBooking(BookingRequest request) {
         Booking booking = Booking.builder()
                 .firstName(request.getFirstName())
@@ -35,10 +37,36 @@ public class BookingService {
                 .flightNumber(request.getFlightNumber())
                 .specialRequests(request.getSpecialRequests())
                 .bookedAt(LocalDateTime.now())
+                .hotelId(request.getHotelId())
+                .managerId(request.getManagerId())
                 .build();
 
         return bookingRepository.save(booking);
     }
+
+    /**
+     *  Get bookings by hotelId (Used by internal API or manager dashboard)
+     */
+    public List<BookingResponse> getBookingsByHotelId(String hotelId) {
+        return bookingRepository.findByHotelId(hotelId)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     *  Get bookings by managerId (For manager dashboard)
+     */
+    public List<BookingResponse> getBookingsByManagerId(String managerId) {
+        return bookingRepository.findByManagerId(managerId)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get bookings made by a specific user (email from JWT principal)
+     */
     public List<BookingResponse> getBookingsByEmail(String email) {
         return bookingRepository.findByEmail(email)
                 .stream()
@@ -46,6 +74,9 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     *  Get all bookings (Admin use)
+     */
     public List<BookingResponse> getAllBookings() {
         return bookingRepository.findAll()
                 .stream()
@@ -53,8 +84,20 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Get bookings by hotel name (used in optional manager filter)
+     */
+    public List<BookingResponse> getBookingsByHotelName(String hotelName) {
+        return bookingRepository.findAll()
+                .stream()
+                .filter(booking -> booking.getHotelName().equalsIgnoreCase(hotelName))
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
 
-    // Mapping method
+    /**
+     *  Entity → DTO mapper for BookingResponse
+     */
     private BookingResponse mapToResponse(Booking booking) {
         return BookingResponse.builder()
                 .firstName(booking.getFirstName())

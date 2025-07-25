@@ -13,7 +13,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class Booking {
 
     @Id
@@ -41,4 +40,8 @@ public class Booking {
     private String specialRequests;
 
     private LocalDateTime bookedAt;
+
+    private String hotelId;  // Reference to hotel
+    private String managerId; // Reference to manager (optional but recommended for filtering)
+
 }
