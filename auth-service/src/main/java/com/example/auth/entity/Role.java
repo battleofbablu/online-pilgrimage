@@ -3,5 +3,7 @@ package com.example.auth.entity;
 public enum Role {
     USER,
     ADMIN,
-    ADMINISTRATOR
+    ADMINISTRATOR,
+    MANAGER
+
 }

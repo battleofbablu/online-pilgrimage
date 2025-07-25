@@ -8,7 +8,16 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
+
+    // Find bookings by user email
     List<Booking> findByEmail(String email);
+
+    // Existing method to find bookings by hotel name
+    List<Booking> findByHotelName(String hotelName);
+
+    // Find by hotelId (Recommended)
+    List<Booking> findByHotelId(String hotelId);
+
+    // Find by managerId (For manager dashboard)
+    List<Booking> findByManagerId(String managerId);
 }
-
-

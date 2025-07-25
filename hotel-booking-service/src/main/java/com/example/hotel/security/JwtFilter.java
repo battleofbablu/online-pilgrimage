@@ -37,6 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // Allow-list certain paths
         if (path.startsWith("/api/auth")
                 || path.startsWith("/api/hotels/internal")
+                || path.startsWith("api.booking/internal")
                 || path.startsWith("/actuator")) {
             System.out.println("✅ Public path matched, skipping token validation");
             filterChain.doFilter(request, response);

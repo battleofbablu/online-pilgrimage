@@ -19,6 +19,7 @@
     <module>api-gateway</module>
     <module>SpringAdmin-server</module>
       <module>temple-service</module>
+      <module>hotel-manager-service</module>
   </modules>
 
   <properties>
