@@ -18,4 +18,6 @@ public interface BookingService
 
 	    // Get booking by ID
 	 public Booking getBookingById(String bookingId);
+
+	public List<Booking>getBookingByUserEmail(String email);
 }

@@ -41,4 +41,6 @@ public class BookingRequest {
     //  Links to manager/hotel (for filtering and dashboards)
     private String hotelId;
     private String managerId;
+
+    private String userEmail;
 }

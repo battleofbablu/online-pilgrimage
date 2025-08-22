@@ -36,6 +36,11 @@ public class BookingDao implements BookingService {
 		
 		return br.findById(bookingId).orElse(null);
 	}
+	@Override
+	public List<Booking> getBookingByUserEmail(String email) {
+		return br.findByUserEmail(email);
+	}
+
 
 	
 

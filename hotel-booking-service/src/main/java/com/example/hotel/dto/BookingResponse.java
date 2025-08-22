@@ -43,4 +43,8 @@ public class BookingResponse {
 
     //  Timestamp of booking
     private LocalDateTime bookedAt;
+
+    private String userEmail;
+
+
 }

@@ -116,4 +116,28 @@ public class BookingService {
                 .bookedAt(booking.getBookedAt())
                 .build();
     }
+
+    public List<BookingResponse> getBookingByUserEmail(String email) {
+        List<Booking> bookings = bookingRepository.findByEmail(email);
+
+        return bookings.stream()
+                .map(booking -> BookingResponse.builder()
+                        .id(booking.getId())
+                        .firstName(booking.getFirstName())
+                        .lastName(booking.getLastName())
+                        .email(booking.getEmail())
+                        .hotelName(booking.getHotelName())
+                        .hotelAddress(booking.getHotelAddress())
+                        .roomType(booking.getRoomType())
+                        .guests(booking.getGuests())
+                        .arrivalDate(booking.getArrivalDate())
+                        .arrivalTime(booking.getArrivalTime() != null ? booking.getArrivalTime().toString() : "") // handle null
+                        .departureDate(booking.getDepartureDate())
+                        .pickup(booking.getPickup())
+                        .flightNumber(booking.getFlightNumber())
+                        .specialRequests(booking.getSpecialRequests())
+                        .bookedAt(booking.getBookedAt())
+                        .build()
+                ).collect(Collectors.toList());
+    }
 }

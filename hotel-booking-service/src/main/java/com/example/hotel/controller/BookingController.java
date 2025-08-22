@@ -2,8 +2,10 @@ package com.example.hotel.controller;
 
 import com.example.hotel.dto.BookingRequest;
 import com.example.hotel.dto.BookingResponse;
+import com.example.hotel.entity.Booking;
 import com.example.hotel.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -82,5 +84,10 @@ public class BookingController {
     @GetMapping("/hotel/{hotelName}")
     public ResponseEntity<List<BookingResponse>> getBookingsByHotel(@PathVariable String hotelName) {
         return ResponseEntity.ok(bookingService.getBookingsByHotelName(hotelName));
+    }
+
+    @GetMapping("/book/user/{email}")
+    public List<BookingResponse> getBookingsByEmail(@PathVariable String email) {
+        return bookingService.getBookingByUserEmail(email);
     }
 }

@@ -21,6 +21,7 @@ public class Booking {
 
     private String firstName;
     private String lastName;
+
     private String email;
 
     private String hotelName;
@@ -43,5 +44,41 @@ public class Booking {
 
     private String hotelId;  // Reference to hotel
     private String managerId; // Reference to manager (optional but recommended for filtering)
+
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", hotelName='" + hotelName + '\'' +
+                ", hotelAddress='" + hotelAddress + '\'' +
+                ", roomType='" + roomType + '\'' +
+                ", guests=" + guests +
+                ", arrivalDate=" + arrivalDate +
+                ", arrivalTime=" + arrivalTime +
+                ", departureDate=" + departureDate +
+                ", pickup='" + pickup + '\'' +
+                ", flightNumber='" + flightNumber + '\'' +
+                ", specialRequests='" + specialRequests + '\'' +
+                ", bookedAt=" + bookedAt +
+                ", hotelId='" + hotelId + '\'' +
+                ", userEmail='" + userEmail + '\'' +
+                '}';
+    }
+
+    @Column(name = "user_email")
+    private String userEmail;
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+
 
 }
